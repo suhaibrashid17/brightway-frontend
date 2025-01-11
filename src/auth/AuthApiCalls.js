@@ -5,16 +5,7 @@ const admin = {
     "password" : "123456"
 }
 
-export const register=(UserDetails)=>{
-   return new Promise(async(resolve,reject)=>{
-        try{
-           
-        }
-        catch(error)
-        {
-        }
-   })
-}
+
 
 export const login=(UserDetails)=>{
    return new Promise(async(resolve,reject)=>{

@@ -1,42 +1,12 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import { register,login } from "./AuthApiCalls";
+import {login } from "./AuthApiCalls";
 const initialState={
     loggedInUser:null,
     error:null,
     status:"idle",
 }
-export const RegisterStudent=createAsyncThunk(
-    "user/createstudent",
-    async(UserDetails)=>{
-        
-        try{
-            const response = await  registerstudent(UserDetails);
-            return response;
-        }
-        catch(error)
-        {
-            throw error;
-        }
-    }
-    
-)
 
-export const RegisterTeacher=createAsyncThunk(
-    "user/createteacher",
-    async(UserDetails)=>{
-        
-        try{
-            const response = await  registerteacher(UserDetails);
-            return response;
-        }
-        catch(error)
-        {
-            throw error;
-        }
-    }
-    
-)
 
 export const Login=createAsyncThunk(
     "user/login",
@@ -70,26 +40,7 @@ const authSlice=createSlice({
     reducers:{},
     extraReducers:(builder)=>{
         builder
-        .addCase(RegisterStudent.pending,(state)=>{
-            state.status="pending";
-        })
-        .addCase(RegisterStudent.fulfilled,(state,action)=>{
-            state.status="fulfilled";
-        })
-        .addCase(RegisterStudent.rejected,(state,action)=>{
-            state.status="error";
-            state.error=action.error;
-        })
-        .addCase(RegisterTeacher.pending,(state)=>{
-            state.status="pending";
-        })
-        .addCase(RegisterTeacher.fulfilled,(state,action)=>{
-            state.status="fulfilled";
-        })
-        .addCase(RegisterTeacher.rejected,(state,action)=>{
-            state.status="error";
-            state.error=action.error;
-        })
+    
 
         .addCase(Login.pending,(state)=>{
             state.status="pending";
