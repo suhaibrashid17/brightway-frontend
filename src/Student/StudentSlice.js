@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import { register } from "./StudentApiCalls";
+import { register, getAllStudentsByClass } from "./StudentApiCalls";
 import { toast } from "react-toastify";
 const initialState={
     studenterror:null,

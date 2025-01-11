@@ -2,7 +2,8 @@ import React from "react";
 
 function Student({ student, index }) {
   return (
-    <div className="w-2/3 h-20 flex flex-row bg-orange space-x-5">
+    // styling to do...
+    <div className="w-full h-20 flex flex-row bg-orange space-x-5">
       <h1 className="text-white text-xl">{index}</h1>
       <h1 className="text-white text-xl">{student.roll_num}</h1>
       <h1 className="text-white text-xl">

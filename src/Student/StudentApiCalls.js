@@ -19,10 +19,10 @@ export const register=(UserDetails)=>{
 
 export const getAllStudentsByClass = (students_class)=>{
     const params = {class:students_class};
+    console.log(params);
     return new Promise(async(resolve,reject)=>{
         try{
-            console.log(params);
-            const response= await axios.post("http://localhost:8080/api/student/getstudentbyclass",params);
+            const response= await axios.get("http://localhost:8080/api/student/getstudentbyclass",{params});
             if(response){
                 resolve(response);
             }
