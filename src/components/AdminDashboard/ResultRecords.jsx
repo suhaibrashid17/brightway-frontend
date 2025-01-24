@@ -3,7 +3,7 @@ import { ChevronLeft, Search, Edit, Trash2 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { GetAllStudentsByClass } from "../../Student/StudentSlice";
 
-const StudentRecords = () => {
+const ResultRecords = () => {
   const dispatch = useDispatch();
   const [students, setStudents] = useState([]);
   const [selectedClass, setSelectedClass] = useState(null);
@@ -344,4 +344,4 @@ const StudentRecords = () => {
   );
 };
 
-export default StudentRecords;
+export default ResultRecords;

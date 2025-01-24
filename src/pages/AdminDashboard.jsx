@@ -6,12 +6,16 @@ import {
   ClipboardList,
   Shield,
   LayoutDashboard,
+  Award,
+  CheckSquare,
 } from "lucide-react";
 import Dashboard from "../components/AdminDashboard/Dashboard";
 import AddStudent from "../components/AdminDashboard/AddStudent";
 import AddTeacher from "../components/AdminDashboard/AddTeacher";
 import TeacherRecords from "../components/AdminDashboard/TeacherRecords";
 import StudentRecords from "../components/AdminDashboard/StudentRecords";
+import ResultRecords from "../components/AdminDashboard/ResultRecords";
+import AttendanceRecords from "../components/AdminDashboard/AttendanceRecords";
 
 const AdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -61,6 +65,16 @@ const AdminDashboard = () => {
       onClick: () => setCurrentView("TeacherRecords"),
     },
     {
+      title: "Result Records",
+      icon: <Award className="w-5 h-5" />,
+      onClick: () => setCurrentView("ResultRecords"),
+    },
+    {
+      title: "Attendance Records",
+      icon: <CheckSquare className="w-5 h-5" />,
+      onClick: () => setCurrentView("AttendanceRecords"),
+    },
+    {
       title: "Add Admin",
       icon: <Shield className="w-5 h-5" />,
       onClick: () => setCurrentView("AddAdmin"),
@@ -91,6 +105,10 @@ const AdminDashboard = () => {
             <h1 className="text-2xl font-bold">Add Admin</h1>
           </div>
         );
+      case "AttendanceRecords":
+        return <AttendanceRecords />;
+      case "ResultRecords":
+        return <ResultRecords />;
       default:
         return <Dashboard />;
     }
