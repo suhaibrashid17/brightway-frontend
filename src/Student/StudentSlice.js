@@ -1,11 +1,13 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import { register, getAllStudentsByClass } from "./StudentApiCalls";
+import { register, getAllStudentsByClass, saveAttendance, fetchAttendance } from "./StudentApiCalls";
 import { toast } from "react-toastify";
 const initialState={
     studenterror:null,
     studentstatus:"idle",
-    studentarray: [],
+    studentarray: [],  
+    attendanceData: [],
+
 }
 
 
@@ -34,7 +36,29 @@ export const GetAllStudentsByClass = createAsyncThunk(
     }
   }
 );
+export const SaveAttendance = createAsyncThunk(
+  "student/saveAttendance",
+  async (attendanceData) => {
+    try {
+      const response = await saveAttendance(attendanceData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
 
+export const FetchAttendance = createAsyncThunk(
+  "student/fetchAttendance",
+  async ({ class: studentsClass, month, year }) => {
+    try {
+      const response = await fetchAttendance(studentsClass, month + 1, year);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
 const studentSlice=createSlice({
     name:"studentSlice",
     initialState,
@@ -66,6 +90,28 @@ const studentSlice=createSlice({
               })
               .addCase(GetAllStudentsByClass.rejected, (state, action) => {
                 state.studentstatus = "error";
+              })
+              .addCase(SaveAttendance.pending, (state) => {
+                state.studentstatus = "pending";
+              })
+              .addCase(SaveAttendance.fulfilled, (state) => {
+                state.studentstatus = "fulfilled";
+                toast.success("Attendance saved successfully!");
+              })
+              .addCase(SaveAttendance.rejected, (state, action) => {
+                state.studentstatus = "error";
+                toast.error("Failed to save attendance");
+              })
+              .addCase(FetchAttendance.pending, (state) => {
+                state.studentstatus = "pending";
+              })
+              .addCase(FetchAttendance.fulfilled, (state, action) => {
+                state.studentstatus = "fulfilled";
+                state.attendanceData = action.payload;
+              })
+              .addCase(FetchAttendance.rejected, (state, action) => {
+                state.studentstatus = "error";
+                toast.error("Failed to fetch attendance");
               });
       
     }

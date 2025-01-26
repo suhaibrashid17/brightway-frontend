@@ -33,3 +33,34 @@ export const getAllStudentsByClass = (students_class)=>{
         }
     })
 }
+
+export const saveAttendance = (attendanceData) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await axios.post("http://localhost:8080/api/attendance/save", attendanceData);
+        if (response) {
+          resolve(response);
+        }
+      } catch (error) {
+        reject(error);
+      }
+    });
+  };
+  
+  export const fetchAttendance = (studentsClass, month, year) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        console.log(studentsClass)
+      console.log(month)
+      console.log(year)
+        const response = await axios.get("http://localhost:8080/api/attendance/fetch", {
+          params: { class: studentsClass, month, year },
+        });
+        if (response) {
+          resolve(response);
+        }
+      } catch (error) {
+        reject(error);
+      }
+    });
+  };

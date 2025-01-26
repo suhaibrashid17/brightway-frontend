@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { ChevronLeft } from "lucide-react";
-import {useDispatch} from "react-redux"
-import { GetAllStudentsByClass } from "../../Student/StudentSlice";
+import { ChevronLeft, CloudCog } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { GetAllStudentsByClass, SaveAttendance, FetchAttendance } from "../../Student/StudentSlice";
+
 const AttendanceRecords = () => {
   const [selectedClass, setSelectedClass] = useState(null);
   const [navigationStack, setNavigationStack] = useState([]);
@@ -11,12 +12,16 @@ const AttendanceRecords = () => {
   const dispatch = useDispatch();
   const classes = ["Junior", "Pre-9th", "9th", "10th", "11th", "12th"];
   const juniorClasses = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"];
+  const attendanceData = useSelector((state) => state.student.attendanceData);
 
-  let students = [
-    { name: "John Doe", rollNum: "001" },
-    { name: "Jane Smith", rollNum: "002" },
-    { name: "Mike Johnson", rollNum: "003" }
-  ];
+  useEffect(() => {
+    if (selectedClass) {
+      console.log(selectedClass)
+      console.log(selectedMonth)
+      console.log(selectedYear)
+      dispatch(FetchAttendance({ class: selectedClass, month: selectedMonth, year: selectedYear }));
+    }
+  }, [selectedClass, selectedMonth, selectedYear, dispatch]);
 
   const handleClassClick = (class_) => {
     setNavigationStack((prev) => [...prev, selectedClass]);
@@ -38,19 +43,30 @@ const AttendanceRecords = () => {
   };
 
   const handleAttendanceChange = (rollNum, day, status) => {
-    setAttendance(prev => ({
+    setAttendance((prev) => ({
       ...prev,
       [rollNum]: {
         ...prev[rollNum],
-        [day]: status
-      }
+        [day]: status,
+      },
     }));
   };
 
-  const handleSaveAttendance = () => {
-    console.log("Saving Attendance:", attendance);
+  const handleSaveAttendance = async () => {
+    const attendanceData = Object.keys(attendance).map((rollNum) => ({
+      roll_number: rollNum,
+      DnT: new Date(selectedYear, selectedMonth, 1),
+    }));
+
+    try {
+      await dispatch(SaveAttendance(attendanceData)).unwrap();
+      console.log("Attendance saved successfully!");
+    } catch (error) {
+      console.error("Failed to save attendance:", error);
+    }
   };
 
+  // Define the ClassCard component
   const ClassCard = ({ class_ }) => (
     <div
       onClick={() => handleClassClick(class_)}
@@ -61,6 +77,7 @@ const AttendanceRecords = () => {
     </div>
   );
 
+  // Define the JuniorClassCard component
   const JuniorClassCard = () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
       {juniorClasses.map((class_, index) => (
@@ -80,26 +97,24 @@ const AttendanceRecords = () => {
     const [students, setStudents] = useState([]);
     const daysInMonth = getDaysInMonth(selectedMonth, selectedYear);
     const monthNames = [
-      "January", "February", "March", "April", "May", "June", 
-      "July", "August", "September", "October", "November", "December"
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December",
     ];
-  
-    // Fetch students when class_ changes
+
     useEffect(() => {
       const fetchStudents = async () => {
         const response = await dispatch(GetAllStudentsByClass(class_));
-        setStudents(response.payload || []); // Update state with fetched data
+        setStudents(response.payload || []);
       };
-  
       fetchStudents();
-    }, [class_, dispatch]); // Dependency array
-  
+    }, [class_, dispatch]);
+
     return (
       <div className="bg-white p-6 rounded-lg shadow-md">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center space-x-4">
-            <select 
-              value={selectedMonth} 
+            <select
+              value={selectedMonth}
               onChange={(e) => setSelectedMonth(Number(e.target.value))}
               className="px-4 py-2 border rounded-lg"
             >
@@ -107,17 +122,17 @@ const AttendanceRecords = () => {
                 <option key={month} value={index}>{month}</option>
               ))}
             </select>
-            <select 
-              value={selectedYear} 
+            <select
+              value={selectedYear}
               onChange={(e) => setSelectedYear(Number(e.target.value))}
               className="px-4 py-2 border rounded-lg"
             >
-              {[2023, 2024, 2025].map(year => (
+              {[2023, 2024, 2025].map((year) => (
                 <option key={year} value={year}>{year}</option>
               ))}
             </select>
           </div>
-          <button 
+          <button
             onClick={handleSaveAttendance}
             className="px-4 py-2 bg-orange text-white rounded-lg"
           >
@@ -136,23 +151,22 @@ const AttendanceRecords = () => {
               </tr>
             </thead>
             <tbody>
-              {students.map(student => (
+              {students.map((student) => (
                 <tr key={student.roll_num} className="hover:bg-gray-100">
                   <td className="border p-2 w-48">{student.first_name}</td>
                   <td className="border p-2 w-32 text-center">{student.roll_num}</td>
                   {[...Array(daysInMonth)].map((_, day) => (
                     <td key={day} className="border p-2 w-12 text-center">
-                     <select
-                      value={attendance[student.roll_num]?.[day + 1] || 'absent'}
-                      onChange={(e) => handleAttendanceChange(student.roll_num, day + 1, e.target.value)}
-                      className={`w-full text-center border-none bg-transparent bg-red ${
-                        attendance[student.roll_num]?.[day + 1] == 'present' ? 'bg-dgreen' : 'bg-[#FA7070]'
-                      }`}
-                    >
-                      <option value="present">P</option>
-                      <option value="absent">A</option>
-                    </select>
-
+                      <select
+                        value={attendance[student.roll_num]?.[day + 1] || "absent"}
+                        onChange={(e) => handleAttendanceChange(student.roll_num, day + 1, e.target.value)}
+                        className={`w-full text-center border-none bg-transparent ${
+                          attendance[student.roll_num]?.[day + 1] === "present" ? "bg-dgreen" : "bg-[#FA7070]"
+                        }`}
+                      >
+                        <option value="present">P</option>
+                        <option value="absent">A</option>
+                      </select>
                     </td>
                   ))}
                 </tr>
@@ -163,7 +177,6 @@ const AttendanceRecords = () => {
       </div>
     );
   };
-  
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
@@ -176,7 +189,7 @@ const AttendanceRecords = () => {
             <ChevronLeft className="mr-2" size={20} />
             Back to Classes
           </button>
-          <AttendanceTable class_ = {selectedClass}/>
+          <AttendanceTable class_={selectedClass} />
         </div>
       ) : selectedClass === "Junior" ? (
         <>
