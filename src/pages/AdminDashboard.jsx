@@ -65,7 +65,7 @@ const AdminDashboard = () => {
       onClick: () => setCurrentView("TeacherRecords"),
     },
     {
-      title: "Result Records",
+      title: "Test Records",
       icon: <Award className="w-5 h-5" />,
       onClick: () => setCurrentView("ResultRecords"),
     },
